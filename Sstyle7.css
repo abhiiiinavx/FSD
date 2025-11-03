@@ -1,0 +1,9 @@
+body{
+    background-color: rgb(228, 123, 31);
+    color: rgb(20, 17, 17);
+    font-family: Arial, Helvetica, sans-serif;
+}
+div{
+   background-image: linear-gradient(to Right, green,orange, yellow);
+
+}

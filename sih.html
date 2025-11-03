@@ -1,0 +1,681 @@
+import React, { useState, useEffect } from "react";
+import { FarmDashboard } from "../components/farm-dashboard";
+import { CropAdvisory } from "../components/crop-advisory";
+import { SoilHealth } from "../components/soil-health";
+import { WeatherAlerts } from "../components/weather-alerts";
+import { PestDetection } from "../components/pest-detection";
+import { MarketPrices } from "../components/market-prices";
+import { UserProfile } from "../components/user-profile";
+import { AuthForm } from "../components/auth-form";
+import { VoiceSupport } from "../components/voice-support";
+import {
+  AgriculturalGraphics,
+  FloatingElements,
+  WeatherBackground,
+} from "../components/agricultural-graphics";
+import { AppHeader } from "../components/app-header";
+import { MobileNav } from "../components/mobile-nav";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Toaster } from "../components/ui/sonner";
+import { toast } from "sonner";
+import {
+  Sprout,
+  Cloud,
+  Bug,
+  TrendingUp,
+  User,
+  Mic,
+  Settings,
+  LogOut,
+  Home,
+  Leaf,
+  Bell,
+  Zap,
+  Camera,
+  BarChart3,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  MessageSquare,
+  HelpCircle,
+  Sparkles,
+} from "lucide-react";
+
+const Index = () => {
+  const [user, setUser] = useState({ 
+    email: 'demo@krishimitra.com',
+    user_metadata: { full_name: 'Demo Farmer' }
+  }); // Demo user for showcase
+  const [loading, setLoading] = useState(false); // Start with app loaded
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [language, setLanguage] = useState("english");
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [onlineStatus, setOnlineStatus] = useState(navigator.onLine);
+
+  useEffect(() => {
+    // Listen for online/offline status
+    const handleOnline = () => {
+      setOnlineStatus(true);
+      toast.success("🌐 Back online! All features are available.", { duration: 3000 });
+    };
+    const handleOffline = () => {
+      setOnlineStatus(false);
+      toast.error("📶 You're offline. Some features may be limited.", { duration: 5000 });
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Keyboard shortcuts
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case '1':
+            event.preventDefault();
+            setActiveTab('dashboard');
+            break;
+          case '2':
+            event.preventDefault();
+            setActiveTab('advisory');
+            break;
+          case '3':
+            event.preventDefault();
+            setActiveTab('soil');
+            break;
+          case '4':
+            event.preventDefault();
+            setActiveTab('weather');
+            break;
+          case '5':
+            event.preventDefault();
+            setActiveTab('pest');
+            break;
+          case '6':
+            event.preventDefault();
+            setActiveTab('market');
+            break;
+          case '7':
+            event.preventDefault();
+            setActiveTab('profile');
+            break;
+          case 'k':
+            event.preventDefault();
+            setShowQuickActions(!showQuickActions);
+            break;
+        }
+      }
+      
+      // ESC to close quick actions
+      if (event.key === 'Escape' && showQuickActions) {
+        setShowQuickActions(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showQuickActions]);
+
+  // Enhanced welcome experience and notifications
+  useEffect(() => {
+    if (user && !loading) {
+      // Welcome notification for first visit
+      if (isFirstVisit) {
+        setTimeout(() => {
+          const welcomeMessage = language === "hindi" 
+            ? "🌾 कृषिमित्र में आपका स्वागत है! आपका स्मार्ट कृषि सहायक तैयार है।"
+            : "🌾 Welcome to KrishiMitra! Your smart farming assistant is ready.";
+          
+          toast.success(welcomeMessage, {
+            duration: 6000,
+            action: {
+              label: language === "hindi" ? "शुरू करें" : "Get Started",
+              onClick: () => setShowQuickActions(true),
+            },
+          });
+        }, 1000);
+      }
+      
+      // Voice features information
+      const hasSeenVoiceInfo = localStorage.getItem(
+        "krishimitra-voice-info-shown",
+      );
+      if (!hasSeenVoiceInfo) {
+        setTimeout(() => {
+          if (language === "hindi") {
+            toast.info(
+              "🎤 आवाज़ सुविधाएं उपलब्ध हैं! माइक्रोफोन आइकन पर क्लिक करके कृषि सलाह पूछें।",
+              {
+                duration: 5000,
+              },
+            );
+          } else {
+            toast.info(
+              "🎤 Voice features available! Click the microphone icon to ask for farming advice.",
+              {
+                duration: 5000,
+              },
+            );
+          }
+          localStorage.setItem(
+            "krishimitra-voice-info-shown",
+            "true",
+          );
+        }, isFirstVisit ? 8000 : 2000);
+      }
+
+      // Simulate some notifications
+      const mockNotifications = [
+        {
+          id: 1,
+          type: "weather",
+          message: language === "hindi" ? "आज बारिश की संभावना" : "Rain expected today",
+          time: "2 hours ago",
+          urgent: true
+        },
+        {
+          id: 2,
+          type: "market",
+          message: language === "hindi" ? "गेहूं की कीमत बढ़ी" : "Wheat prices increased",
+          time: "5 hours ago",
+          urgent: false
+        }
+      ];
+      setNotifications(mockNotifications);
+    }
+  }, [user, loading, language, isFirstVisit]);
+
+  const handleSignOut = async () => {
+    setUser(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center relative overflow-hidden">
+        {/* Enhanced Animated background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 bg-blue-400 rounded-full animate-pulse"></div>
+          <div className="absolute top-32 right-20 w-16 h-16 bg-indigo-400 rounded-full animate-bounce delay-300"></div>
+          <div className="absolute bottom-20 left-32 w-24 h-24 bg-slate-400 rounded-full animate-pulse delay-700"></div>
+          <div className="absolute bottom-40 right-10 w-12 h-12 bg-blue-500 rounded-full animate-bounce delay-1000"></div>
+          <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-purple-400 rounded-full animate-float delay-1500"></div>
+          <div className="absolute top-1/4 right-1/3 w-6 h-6 bg-green-400 rounded-full animate-pulse delay-2000"></div>
+        </div>
+
+        {/* Enhanced loading card */}
+        <div className="text-center z-10 bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30 shadow-2xl animate-scaleIn">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-500 rounded-full blur-2xl opacity-20 animate-pulse delay-500"></div>
+            <Sparkles
+              className="h-16 w-16 text-blue-400 mx-auto relative z-10 animate-spin"
+              style={{ animationDuration: "3s" }}
+            />
+          </div>
+          <h3 className="text-2xl font-semibold text-white mb-2 gradient-text-blue">
+            KrishiMitra
+          </h3>
+          <p className="text-gray-300 animate-pulse mb-4">
+            स्मार्ट कृषि का भविष्य लोड हो रहा है...
+          </p>
+          
+          {/* Enhanced loading indicators */}
+          <div className="mt-4 flex justify-center mb-4">
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-300"></div>
+              <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-700"></div>
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="w-full bg-white/20 rounded-full h-2 mb-4">
+            <div className="bg-gradient-to-r from-blue-400 to-indigo-500 h-2 rounded-full animate-pulse" style={{width: '70%'}}></div>
+          </div>
+          
+          {/* Loading features preview */}
+          <div className="flex justify-center space-x-4 text-white/60 text-xs">
+            <div className="flex items-center space-x-1">
+              <Sprout className="h-3 w-3" />
+              <span>Crops</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Cloud className="h-3 w-3" />
+              <span>Weather</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <TrendingUp className="h-3 w-3" />
+              <span>Markets</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Mic className="h-3 w-3" />
+              <span>Voice AI</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Additional floating elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-1/6 text-blue-300/20 animate-float delay-1000">
+            <Leaf className="h-8 w-8" />
+          </div>
+          <div className="absolute bottom-1/3 right-1/6 text-green-300/20 animate-bounce delay-2000">
+            <Sprout className="h-6 w-6" />
+          </div>
+          <div className="absolute top-2/3 left-2/3 text-purple-300/20 animate-pulse delay-3000">
+            <Sparkles className="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthForm />;
+  }
+
+  const translations = {
+    english: {
+      title: "KrishiMitra - Smart Farming Assistant",
+      dashboard: "Dashboard",
+      cropAdvisory: "Crop Advisory",
+      soilHealth: "Soil Health",
+      weather: "Weather",
+      pestDetection: "Pest Detection",
+      marketPrices: "Market Prices",
+      profile: "Profile",
+      signOut: "Sign Out",
+      quickActions: "Quick Actions",
+      scanPlant: "Scan Plant",
+      checkWeather: "Check Weather",
+      viewPrices: "View Prices",
+      askAI: "Ask AI",
+      notifications: "Notifications",
+      online: "Online",
+      offline: "Offline",
+      keyboardShortcuts: "Keyboard Shortcuts",
+      shortcutHelp: "Press Ctrl+1-7 for tabs, Ctrl+K for quick actions",
+    },
+    hindi: {
+      title: "कृषिमित्र - स्मार्ट कृषि सहायक",
+      dashboard: "डैशबोर्ड",
+      cropAdvisory: "फसल सलाह",
+      soilHealth: "मिट्टी का स्वास्थ्य",
+      weather: "मौसम",
+      pestDetection: "कीट पहचान",
+      marketPrices: "बाज़ार भाव",
+      profile: "प्रोफ़ाइल",
+      signOut: "साइन आउट",
+      quickActions: "त्वरित कार्य",
+      scanPlant: "पौधा स्कैन करें",
+      checkWeather: "मौसम देखें",
+      viewPrices: "भाव देखें",
+      askAI: "AI से पूछें",
+      notifications: "सूचनाएं",
+      online: "ऑनलाइन",
+      offline: "ऑफलाइन",
+      keyboardShortcuts: "कीबोर्ड शॉर्टकट",
+      shortcutHelp: "टैब के लिए Ctrl+1-7, त्वरित कार्यों के लिए Ctrl+K दबाएं",
+    },
+  };
+
+  const t = translations[language];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="w-full h-full bg-repeat opacity-30"
+          style={{
+            backgroundImage: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%232563eb' fill-opacity='0.4'%3E%3Cpath d='M30 30c0-6.627-5.373-12-12-12s-12 5.373-12 12 5.373 12 12 12 12-5.373 12-12zm12 0c0-6.627-5.373-12-12-12s-12 5.373-12 12 5.373 12 12 12 12-5.373 12-12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+          }}
+        />
+      </div>
+
+      {/* Agricultural Graphics */}
+      <AgriculturalGraphics variant="pattern" />
+      <FloatingElements />
+      <WeatherBackground weather="sunny" />
+
+      <div className="container mx-auto px-4 py-6 relative z-10">
+        {/* Status Bar */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {/* Mobile Navigation */}
+            <MobileNav
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              language={language}
+              onSignOut={handleSignOut}
+              notifications={notifications}
+            />
+            
+            <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
+              onlineStatus 
+                ? 'bg-green-100 text-green-800 border border-green-200' 
+                : 'bg-red-100 text-red-800 border border-red-200'
+            }`}>
+              <div className={w-2 h-2 rounded-full ${onlineStatus ? 'bg-green-500' : 'bg-red-500'} animate-pulse}></div>
+              <span>{onlineStatus ? t.online : t.offline}</span>
+            </div>
+            {notifications.length > 0 && (
+              <Badge variant="secondary" className="animate-pulse hidden md:inline-flex">
+                {notifications.length} {t.notifications}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center space-x-3 text-sm text-white/70">
+            <div className="hidden lg:block" title={t.shortcutHelp}>
+              <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Ctrl+K</kbd>
+            </div>
+            <div>
+              {new Date().toLocaleDateString(language === "hindi" ? "hi-IN" : "en-IN")}
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Header */}
+        <AppHeader
+          title={t.title}
+          language={language}
+          setLanguage={setLanguage}
+          onSignOut={handleSignOut}
+          user={user}
+        />
+
+        {/* Enhanced Navigation Tabs */}
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 p-2 mb-8 transition-all duration-300 hover:bg-white/80 hidden md:block">
+            <TabsList className="grid w-full grid-cols-7 bg-transparent gap-1">
+              <TabsTrigger
+                value="dashboard"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.dashboard}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="advisory"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <Sprout className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.cropAdvisory}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="soil"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <Leaf className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.soilHealth}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="weather"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <Cloud className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.weather}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="pest"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <Bug className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.pestDetection}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="market"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.marketPrices}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="profile"
+                className="flex items-center space-x-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-slate-500 data-[state=active]:text-white transition-all duration-300 rounded-xl"
+              >
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {t.profile}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Tab Content with Enhanced Backgrounds */}
+          <div className="relative">
+            {/* Tab Transition Effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl animate-pulse opacity-0 hover:opacity-100 transition-all duration-700 pointer-events-none"></div>
+            <TabsContent value="dashboard" className="mt-0">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <FarmDashboard
+                  user={user}
+                  language={language}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="advisory" className="mt-0">
+              <div className="bg-gradient-to-br from-green-50/90 to-emerald-50/90 backdrop-blur-sm rounded-2xl shadow-lg border border-green-200/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <CropAdvisory user={user} language={language} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="soil" className="mt-0">
+              <div className="bg-gradient-to-br from-amber-50/90 to-orange-50/90 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-200/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <SoilHealth user={user} language={language} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="weather" className="mt-0">
+              <div className="bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-200/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <WeatherAlerts
+                  user={user}
+                  language={language}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="pest" className="mt-0">
+              <div className="bg-gradient-to-br from-red-50/90 to-pink-50/90 backdrop-blur-sm rounded-2xl shadow-lg border border-red-200/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <PestDetection
+                  user={user}
+                  language={language}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="market" className="mt-0">
+              <div className="bg-gradient-to-br from-purple-50/90 to-indigo-50/90 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-200/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <MarketPrices user={user} language={language} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="profile" className="mt-0">
+              <div className="bg-gradient-to-br from-gray-50/90 to-slate-50/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/30 p-6 animate-fadeInUp transition-all duration-500 hover:shadow-2xl">
+                <UserProfile
+                  user={user}
+                  language={language}
+                  setLanguage={setLanguage}
+                />
+              </div>
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
+
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <div className="flex flex-col space-y-4">
+          {/* Quick Actions Menu */}
+          {showQuickActions && (
+            <div className="flex flex-col space-y-3 animate-slideInFromRight">
+              <Button
+                size="sm"
+                className="bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => {
+                  setActiveTab("pest");
+                  setShowQuickActions(false);
+                }}
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                {t.scanPlant}
+              </Button>
+              <Button
+                size="sm"
+                className="bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => {
+                  setActiveTab("weather");
+                  setShowQuickActions(false);
+                }}
+              >
+                <Cloud className="h-4 w-4 mr-2" />
+                {t.checkWeather}
+              </Button>
+              <Button
+                size="sm"
+                className="bg-purple-500 hover:bg-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => {
+                  setActiveTab("market");
+                  setShowQuickActions(false);
+                }}
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                {t.viewPrices}
+              </Button>
+              <Button
+                size="sm"
+                className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => {
+                  const voiceButton = document.querySelector('[data-voice-trigger]') as HTMLElement;
+                  if (voiceButton) voiceButton.click();
+                  setShowQuickActions(false);
+                }}
+              >
+                <Mic className="h-4 w-4 mr-2" />
+                {t.askAI}
+              </Button>
+            </div>
+          )}
+          
+          {/* Main Floating Action Button */}
+          <Button
+            className={`rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 ${
+              showQuickActions 
+                ? 'bg-red-500 hover:bg-red-600 rotate-45' 
+                : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700'
+            }`}
+            onClick={() => setShowQuickActions(!showQuickActions)}
+          >
+            {showQuickActions ? (
+              <span className="text-2xl">×</span>
+            ) : (
+              <Zap className="h-6 w-6" />
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Voice Support Integration */}
+      <div className="fixed bottom-6 left-6 z-40">
+        <VoiceSupport language={language} />
+      </div>
+
+      {/* Notification Panel */}
+      {notifications.length > 0 && (
+        <div className="fixed top-20 right-4 z-40 max-w-sm animate-slideInFromRight">
+          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center space-x-2 text-sm">
+                <Bell className="h-4 w-4 text-blue-600" />
+                <span>{t.notifications}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {notifications.slice(0, 3).map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-3 rounded-lg border-l-4 ${
+                    notification.urgent
+                      ? 'bg-orange-50 border-orange-400'
+                      : 'bg-blue-50 border-blue-400'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {notification.message}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {notification.time}
+                      </p>
+                    </div>
+                    {notification.urgent && (
+                      <AlertTriangle className="h-4 w-4 text-orange-500 ml-2 flex-shrink-0" />
+                    )}
+                  </div>
+                </div>
+              ))}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="w-full text-xs"
+                onClick={() => setNotifications([])}
+              >
+                Clear All
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Enhanced Particle Effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-float opacity-30"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-green-400 rounded-full animate-pulse opacity-40 delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-purple-400 rounded-full animate-bounce opacity-20 delay-2000"></div>
+        <div className="absolute top-2/3 right-1/4 w-1.5 h-1.5 bg-yellow-400 rounded-full animate-float opacity-30 delay-3000"></div>
+        <div className="absolute bottom-1/3 right-2/3 w-2 h-2 bg-pink-400 rounded-full animate-pulse opacity-25 delay-4000"></div>
+      </div>
+
+      <Toaster />
+    </div>
+  );
+};
+
+export default Index;

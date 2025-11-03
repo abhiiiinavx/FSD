@@ -1,0 +1,49 @@
+.container {
+  width: 100%;
+  display: flex; /* puts boxes in a row */
+  justify-content: space-around; /* space between boxes */
+  margin-top: 50px;
+  border-color: black;
+}
+
+/* Box styling */
+.box1 {
+  width: 150px;
+  height: 150px;
+  background-color: rgb(211, 69, 138);
+  border: 2px solid navy;
+  text-align: center;
+  line-height: 150px;
+  font-weight: bold;
+  position: static; /* not necessary but shown explicitly */
+}
+.box2 {
+  width: 150px;
+  height: 150px;
+  background-color: rgb(45, 12, 92);
+  border: 2px solid rgb(2, 2, 14);
+  text-align: center;
+  line-height: 150px;
+  font-weight: bold;
+  position: static; /* not necessary but shown explicitly */
+}
+.box3 {
+  width: 150px;
+  height: 150px;
+  background-color: rgb(24, 163, 73);
+  border: 2px solid rgb(2, 2, 14);
+  text-align: center;
+  line-height: 150px;
+  font-weight: bold;
+  position: static; /* not necessary but shown explicitly */
+}
+.box4 {
+  width: 150px;
+  height: 150px;
+  background-color: rgb(64, 232, 238);
+  border: 2px solid rgb(2, 2, 14);
+  text-align: center;
+  line-height: 150px;
+  font-weight: bold;
+  position: static; /* not necessary but shown explicitly */
+}  

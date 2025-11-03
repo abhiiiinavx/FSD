@@ -3,8 +3,9 @@ div {
     font-weight: 700;
     font-size: 20px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    height: 400px;
+    height: 100px;
     width: 400px;
-    background-color: rgb(6, 4, 3);
+    background-color: rgb(0, 0, 0);
     padding: 75px;
-} 
+    font-color: white;
+}

@@ -1,0 +1,21 @@
+#font{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 200;
+    font-style: oblique;
+    color: brown;
+    text-align: center;
+    line-height: 30px;
+    letter-spacing: 5px;
+    word-spacing: 2px;
+    text-indent: 10px;
+}
+#flex{
+    height: 750px;
+    width: 450px;
+    background-color: beige;
+    padding: 5px;
+}
+#heads{
+    color: green;
+    text-decoration: line-through;
+}
